@@ -25,3 +25,26 @@ char* getdirection(int i)
   case 3:return "SOUTH";
  }
 }
+void* Leave(struct car* arg)
+{sem_wait(&carLock);
+	printf("\n\tcar %dleaving to %s",arg->no,getdirection(arg->outdir));
+  sem_post (&carLock);
+ return 0;
+}
+void* Enter(struct car* arg)
+{int indir = arg->indir;
+ int outdir = arg->outdir;
+ printf("\ncar %d is moving from %s to %s",arg->no,getdirection(indir),getdirection(outdir));
+ sem_wait(&mutex);
+  if((indir==0 || indir==1)&& outdir==2)
+   {conflictcount++;}
+  if(conflictcount==1){sem_wait(&carLock);}
+  sem_post(&mutex);
+  Leave(arg);
+  printf("\ncar %d is moved from %s to %s",arg->no,getdirection(indir),getdirection(outdir));
+  sem_wait(&mutex);
+  if(indir==0 ||indir==1 ){conflictcount--;}
+	if(conflictcount==0){sem_post(&carLock);}
+  sem_post(&mutex);
+ return 0;
+}
