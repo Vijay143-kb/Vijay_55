@@ -48,3 +48,24 @@ void* Enter(struct car* arg)
   sem_post(&mutex);
  return 0;
 }
+
+int main()
+{pthread_t carthread[MAX];
+ int i;
+ struct car c[5];
+ sem_init(&mutex,0,1);
+ printf("Enter the directions:[NORTH 0,EAST 1,WEST 2,SOUTH 3]\n");
+ for(i=0; i<MAX; i++)
+ {printf("enter indir and outdir of car%d:",i+1);
+  scanf("%d",&c[i].indir);scanf("%d",&c[i].outdir);
+  c[i].no=i+1;
+ }
+ for(i=0; i<MAX; i++)
+ {pthread_create(&carthread[i],0,Enter,&c[i]);
+  // pthread_join(carthread[i],0);
+ }
+ for(i=0; i<MAX; i++)
+ {pthread_join(carthread[i],0);}
+ sem_destroy (&mutex);
+ return 0;
+}
